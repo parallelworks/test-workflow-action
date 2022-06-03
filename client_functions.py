@@ -45,7 +45,7 @@ def launch_workflow(wf_name, wf_xml_args, user, c):
     return jid, djid
 
 
-def wait_workflow(djid, wf_name):
+def wait_workflow(djid, wf_name, c):
     print('Waiting for workflow', wf_name)
     while True:
         try:
@@ -59,6 +59,6 @@ def wait_workflow(djid, wf_name):
             raise Exception('Simulation had an error. Please try again')
 
         print('Workflow', wf_name, 'state:', state)
-        sleep(2)
+        sleep(10)
 
     print(wf_name, 'completed successfully')
