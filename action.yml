@@ -1,0 +1,33 @@
+# action.yml
+name: 'test-pw-workflow'
+description: 'Test a workflow on Parallel Works (PW) platform'
+inputs:
+  pw-user-host:  # id of input
+    description: 'Name of the PW user host. echo ${PW_USER_HOST}'
+    required: true
+    default: 'canary-user-01.parallel.works'
+  pw-api-key:
+    description: 'API keu of the PW account. echo ${PW_API_KEY}'
+    required: true
+    default: 'use-github-secrets-to-store-your-key'
+  pw-user:
+    description: 'Name of the PW user. echo ${PW_USER}'
+    required: true
+    default: 'User.Demo'
+  resource-pool-names:
+    description: 'Name of the resource pools required to run the workflow'
+    required: true
+    default: 'gcpslurmv2'
+  workflow-name:
+    description: 'Name of the PW workflow to test'
+    required: true
+    default: 'singlecluster_parsl_demo'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.pw-user-host }}
+    - ${{ inputs.pw-api-key }}
+    - ${{ inputs.pw-user }}
+    - ${{ inputs.resource-pool-names }}
+    - ${{ inputs.workflow-name }}
