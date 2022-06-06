@@ -31,4 +31,4 @@ jobs:
 ### Notes:
 The workflow-parameters can be downloaded from the input form in PW as shown in the screenshot below:
 
-<div style="text-align:left;"><img src="https://drive.google.com/uc?id=11S7U2_LGAaKxxQva6tJkOhH7r8h3heiN" height="225"></div>
+<div style="text-align:left;"><img src="https://drive.google.com/uc?id=11S7U2_LGAaKxxQva6tJkOhH7r8h3heiN" width="900"></div>
