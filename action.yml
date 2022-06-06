@@ -7,7 +7,7 @@ inputs:
     required: true
     default: 'beluga.parallel.works'
   pw-api-key:
-    description: 'API keu of the PW account. echo ${PW_API_KEY}'
+    description: 'API key of the PW account. echo ${PW_API_KEY}'
     required: true
     default: 'use-github-secrets-to-store-your-key'
   pw-user:

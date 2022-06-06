@@ -8,7 +8,7 @@ from time import sleep
 from client_functions import *
 
 if __name__ == '__main__':
-    pw_user_host = sys.argv[1] # echo ${PW_USER_HOST}
+    pw_user_host = sys.argv[1] # beluga.parallel.works
     pw_api_key = sys.argv[2]   # echo ${PW_API_KEY}
     user = sys.argv[3]         # echo ${PW_USER}
     resource_names = sys.argv[4].split('---') # Not case sensitive
