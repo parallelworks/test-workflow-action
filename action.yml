@@ -35,3 +35,4 @@ runs:
     - ${{ inputs.pw-user }}
     - ${{ inputs.resource-pool-names }}
     - ${{ inputs.workflow-name }}
+    - ${{ inputs.workflow-parameters }} 
