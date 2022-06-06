@@ -21,7 +21,7 @@ jobs:
         uses: parallelworks/test-workflow-action@v3
         with:
           pw-user-host: 'beluga.parallel.works'
-          pw-api-key: ${{ secrets.ALVAROVIDAL_BELUGA_API_KEY }}
+          pw-api-key: ${{ secrets.USERDEMO_BELUGA_API_KEY }}
           pw-user: 'User.Demo'
           resource-pool-names: 'gcpslurmv2'
           workflow-name: 'singlecluster_parsl_demo'
