@@ -15,7 +15,7 @@ inputs:
     required: true
     default: 'User.Demo'
   resource-pool-names:
-    description: 'Name of the resource pools required to run the workflow'
+    description: 'Name of the resource pools required to run the workflow. Use --- to define multiple resource pools, e.g. pool1---pool2'
     required: true
     default: 'gcpslurmv2'
   workflow-name:
