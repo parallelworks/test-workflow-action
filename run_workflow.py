@@ -1,5 +1,5 @@
 from client import Client
-import sys
+import sys, json
 import traceback
 
 # FIXME: Wont be able to stop the resource if it was just started!
@@ -13,7 +13,7 @@ if __name__ == '__main__':
     user = sys.argv[3]         # echo ${PW_USER}
     resource_names = sys.argv[4].split('---') # Not case sensitive
     wf_name = sys.argv[5]
-    wf_xml_args = {}
+    wf_xml_args = json.loads(sys.argv[6])
     
     c = Client('https://' + pw_user_host, pw_api_key)
 

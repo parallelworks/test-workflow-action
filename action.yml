@@ -22,6 +22,10 @@ inputs:
     description: 'Name of the PW workflow to test'
     required: true
     default: 'singlecluster_parsl_demo'
+  workflow-parameters:
+    description: 'Input parameters to the PW workflow. Download JSON payload from input form'
+    required: true
+    default: '{"name": "PW_USER"}'
 runs:
   using: 'docker'
   image: 'Dockerfile'
