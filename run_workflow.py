@@ -2,6 +2,9 @@ from client import Client
 import sys
 import traceback
 
+# FIXME: Wont be able to stop the resource if it was just started!
+from time import sleep
+
 from client_functions import *
 
 if __name__ == '__main__':
@@ -47,14 +50,12 @@ if __name__ == '__main__':
             
 
     # Stoping resources
-    # FIXME: Wont be able to stop the resource if it was just started!
-    from time import sleep
     sleep(5)
     for rname, rstatus in zip(resource_names, resource_status):
         print(rname, 'status', rstatus)
         # Do not stop the pool if it was already started!
         # FIXME: Even with this precaution a pool with ongoing work could be stopped
         if rstatus == 'started':
-            stop_resource(rname, c)
+             stop_resource(rname, c)
 
     
