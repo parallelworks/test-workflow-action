@@ -18,15 +18,17 @@ jobs:
     steps:
       - name: run-workflow-beluga
         id: run-beluga
-        uses: parallelworks/test-workflow-action@v3
+        uses: parallelworks/test-workflow-action@v5
         with:
           pw-user-host: 'beluga.parallel.works'
           pw-api-key: ${{ secrets.ALVAROVIDALTO_BELUGA_API_KEY }}
           pw-user: 'alvarovidalto'
           resource-pool-names: 'gcpslurmv2'
           workflow-name: 'singlecluster_parsl_demo'
+          workflow-parameters: '{"name": "PW_USER"}'
 ```
 
+### Notes:
+The workflow-parameters can be downloaded from the input form in PW as shown in the screenshot below:
 
-### TODO / Limitations:
-The input parameters to the PW workflow are hardcoded in the parameter `wf_xml_args = {}` of the `run_workflow.py` script. This sample action needs to be modified to support passing inputs to the workflow. 
+<div style="text-align:left;"><img src="https://drive.google.com/uc?id=11S7U2_LGAaKxxQva6tJkOhH7r8h3heiN" height="450"></div>
