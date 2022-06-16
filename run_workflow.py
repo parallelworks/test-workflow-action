@@ -19,6 +19,9 @@ if __name__ == '__main__':
 
     # Make sure we get to stopping the resources!
     run_workflow = True
+
+    # Exit with error code:
+    exit_error = ''
     
     # Starting resources
     resource_status = []
@@ -26,15 +29,19 @@ if __name__ == '__main__':
         try:
             resource_status.append(start_resource(rname, c))
         except Exception as e:
-            print('ERROR: Unexpected error when starting resource', rname)
+            msg = 'ERROR: Unexpected error when starting resource ' + rname
+            print(msg)
             traceback.print_exec()
             run_workflow = False
+            exit_error += msg 
 
     # Running workflow
     if run_workflow:
         if 'not-found' in resource_status:
-            print('ERROR: Some resources were not found')
+            msg = 'ERROR: Some resources were not found'
+            print(msg)
             run_workflow = False
+            exit_error += '\n' + msg
 
     if run_workflow:
         try:
@@ -43,10 +50,14 @@ if __name__ == '__main__':
             # Waiting for workflow to complete
             wait_workflow(djid, wf_name, c)
         except Exception:
-            print('Failed to launch workflow')
+            msg = 'Workflow launch failed'
+            print(msg)
             traceback.print_exc()
+            exit_error += '\n' + msg
     else:
-        print('Aborting workflow launch')
+        msg = 'Aborting workflow launch'
+        print(msg)
+        exit_error += '\n' + msg
             
 
     # Stoping resources
@@ -58,4 +69,6 @@ if __name__ == '__main__':
         if rstatus == 'started':
              stop_resource(rname, c)
 
-    
+
+    if exit_error:
+        raise(Exception(exit_error))
