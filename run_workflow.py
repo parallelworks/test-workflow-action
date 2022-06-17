@@ -30,7 +30,7 @@ if __name__ == '__main__':
             resource_status.append(start_resource(rname, c))
         except Exception as e:
             msg = 'ERROR: Unexpected error when starting resource ' + rname
-            print(msg)
+            printd(msg)
             traceback.print_exec()
             run_workflow = False
             exit_error += msg 
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     if run_workflow:
         if 'not-found' in resource_status:
             msg = 'ERROR: Some resources were not found'
-            print(msg)
+            printd(msg)
             run_workflow = False
             exit_error += '\n' + msg
 
@@ -48,22 +48,26 @@ if __name__ == '__main__':
             # Launching workflow
             jid, djid = launch_workflow(wf_name, wf_xml_args, user, c)
             # Waiting for workflow to complete
-            wait_workflow(djid, wf_name, c)
+            state = wait_workflow(djid, wf_name, c)
+            if state != 'ok':
+                msg = 'Workflow final state is ' + state
+                printd(msg)
+                exit_error += '\n' + msg
         except Exception:
-            msg = 'Workflow launch failed'
-            print(msg)
+            msg = 'Workflow launch failed unexpectedly'
+            printd(msg)
             traceback.print_exc()
             exit_error += '\n' + msg
     else:
         msg = 'Aborting workflow launch'
-        print(msg)
+        printd(msg)
         exit_error += '\n' + msg
             
 
     # Stoping resources
     sleep(5)
     for rname, rstatus in zip(resource_names, resource_status):
-        print(rname, 'status', rstatus)
+        printd(rname, 'status', rstatus)
         # Do not stop the pool if it was already started!
         # FIXME: Even with this precaution a pool with ongoing work could be stopped
         if rstatus == 'started':

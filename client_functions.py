@@ -58,11 +58,9 @@ def wait_workflow(djid, wf_name, c):
         except:
             state = 'starting'
 
-        if state == 'ok':
-            break
-        elif (state == 'deleted' or state == 'error'):
-            raise Exception('Simulation had an error. Please try again')
-
+        if state in ['ok', 'deleted', 'error']:
+            return state
+        
         printd('Workflow', wf_name, 'state:', state)
         sleep(10)
 
