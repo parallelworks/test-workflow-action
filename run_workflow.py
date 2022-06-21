@@ -31,7 +31,7 @@ if __name__ == '__main__':
         except Exception as e:
             msg = 'ERROR: Unexpected error when starting resource ' + rname
             printd(msg)
-            traceback.print_exec()
+            traceback.print_exc()
             run_workflow = False
             exit_error += msg 
 
