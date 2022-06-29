@@ -26,6 +26,9 @@ if __name__ == '__main__':
     # Starting resources
     resource_status = []
     for rname in resource_names:
+        if not rname:
+            continue
+            
         try:
             resource_status.append(start_resource(rname, c))
         except Exception as e:
