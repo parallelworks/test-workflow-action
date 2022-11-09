@@ -41,6 +41,11 @@ and `workflow-parameters`); as such all 5 of these lines need to be specific to 
 defined in the **workflow repository** and not in the "action repository" (here).
 
 ### Notes:
-The workflow-parameters can be downloaded from the input form in PW as shown in the screenshot below:
+1. The workflow-parameters can be downloaded from the input form in PW as shown in the screenshot below:
 
 <div style="text-align:left;"><img src="https://drive.google.com/uc?id=11S7U2_LGAaKxxQva6tJkOhH7r8h3heiN" width="1100"></div>
+
+2. GitHub, by default does not allow users to use their PAT to add `.github/workflows/main.yaml`.  Either add this permission
+to your PAT via your account's `Settings` > `Developer Settings` > `Personal Access Tokens`, selecting your PAT, and checking 
+the workflow box or use an SSH key. An easy alternative is to use the GitHub GUI to add actions by clicking on the `Actions` tab
+for your repository and then clicking on the `set up a workflow yourself ->` link.
