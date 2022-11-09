@@ -48,4 +48,7 @@ defined in the **workflow repository** and not in the "action repository" (here)
 2. GitHub, by default does not allow users to use their PAT to add `.github/workflows/main.yaml`.  Either add this permission
 to your PAT via your account's `Settings` > `Developer Settings` > `Personal Access Tokens`, selecting your PAT, and checking 
 the workflow box or use an SSH key. An easy alternative is to use the GitHub GUI to add actions by clicking on the `Actions` tab
-for your repository and then clicking on the `set up a workflow yourself ->` link.
+for your repository and then clicking on the `set up a workflow yourself ->` link. This issue is purely permission to **add** an
+action to a repository - once that permission is added, a standard PAT (without any special GitHub workflow permission) can 
+still make pushes to the repository, and if the action is already set up to run on a push, then those actions will be
+executed.
