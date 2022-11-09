@@ -5,8 +5,14 @@ Sample [Docker-based Github action](https://docs.github.com/en/actions/creating-
 2. Submits the workflow
 3. Stops the PW resources started in (1)
 
-The inputs to the action are defined in the `action.yml` file. The PW client requires the API key of the account for authentication. Store this key as a [Github secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) in the repository with your PW workflow.  
-The code snippet below exemplifies how to add this action the Github repository of a PW workflow such that the worflow is tested with every new push:
+**Note:** If the resources requested by the workflow are already running, the workflow will use them and **not** shut them down. 
+
+The inputs to the action are defined in the `action.yml` file here and are general so they apply to almost any PW workflow. 
+To add this action to a PW workflow (stored in a separate repository since this repository stores only the action), there 
+are at least two steps that are done in the **workflow repository**:
+
+1. The PW client requires the API key of the account for authentication. Store this key as a [Github secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) in the repository with your PW workflow (**not** this repository).  
+2. Tell GitHub that this action needs to be triggered whenever something (that you specify) happens in the **workflow repository** by adding this action to `.github/workflows/main.yaml` in the workflow repository.  For example, the code snippet below adds this action the Github repository of a PW workflow such that the worflow is tested with every new push:
 
 ```
 on: [push]
@@ -27,6 +33,12 @@ jobs:
           workflow-name: 'singlecluster_parsl_demo'
           workflow-parameters: '{"name": "PW_USER"}'
 ```
+
+The last five lines of this example of `.github/workflows/main.yaml` are the 5 essential inputs to running any 
+PW workflow via the PW API. These inputs will vary depending on the host (e.g. `cloud.parallel.works`), the user's
+credentials (API key and username), the resource to run the workflow on, and the workflow itself (`workflow-name`
+and `workflow-parameters`); as such all 5 of these lines need to be specific to a particular workflow and are 
+defined in the **workflow repository** and not in the "action repository" (here).
 
 ### Notes:
 The workflow-parameters can be downloaded from the input form in PW as shown in the screenshot below:
