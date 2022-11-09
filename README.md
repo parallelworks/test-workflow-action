@@ -11,8 +11,8 @@ The inputs to the action are defined in the `action.yml` file here and are gener
 To add this action to a PW workflow (stored in a separate repository since this repository stores only the action), there 
 are at least two steps that are done in the **workflow repository**:
 
-1. The PW client requires the API key of the account for authentication. Store this key as a [Github secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) in the repository with your PW workflow (**not** this repository).  
-2. Tell GitHub that this action needs to be triggered whenever something (that you specify) happens in the **workflow repository** by adding this action to `.github/workflows/main.yaml` in the workflow repository.  For example, the code snippet below adds this action the Github repository of a PW workflow such that the worflow is tested with every new push:
+1. The PW client requires the API key of the account for authentication. Store this key as a [Github secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets) in the repository with your PW workflow (**not** this repository).  Navigate to your workflow on GitHub.com and then click on `Settings` > `Secrets` > `Actions` > `New Repository Secret`. This will only be possible if you are the owner of the workflow repository or have been granted permissions to edit/view repository secrets in the workflow repository, otherwise the buttons will be hidden.
+3. Tell GitHub that this action needs to be triggered whenever something (that you specify) happens in the **workflow repository** by adding this action to `.github/workflows/main.yaml` in the workflow repository.  For example, the code snippet below adds this action the Github repository of a PW workflow such that the worflow is tested with every new push:
 
 ```
 on: [push]
