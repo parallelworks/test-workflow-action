@@ -52,3 +52,13 @@ for your repository and then clicking on the `set up a workflow yourself ->` lin
 action to a repository - once that permission is added, a standard PAT (without any special GitHub workflow permission) can 
 still make pushes to the repository, and if the action is already set up to run on a push, then those actions will be
 executed.
+
+3. If instead of a push the GH action in the workflow repository is launched by a GH release, be careful to specify a specific stage in the release process (creation, editing, publishing) - otherwise a general `on: [release]` will actually be interpreted at [three separate events](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#release), each event lauching a different workflow run. Explicitly, to select the publishing of a release (instead of creation or editing), the following header snippet can be used:
+```
+on:
+  release:
+    type: [publish]
+    
+jobs:
+  ...
+```
