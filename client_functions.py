@@ -1,87 +1,66 @@
 from client import Client
 import sys, json
-import traceback
-import time
-
-# FIXME: Wont be able to stop the resource if it was just started!
 from time import sleep
+from datetime import datetime
 
-from client_functions import *
 
-if __name__ == '__main__':
-    pw_user_host = sys.argv[1] # beluga.parallel.works
-    pw_api_key = sys.argv[2]   # echo ${PW_API_KEY}
-    user = sys.argv[3]         # echo ${PW_USER}
-    resource_names = sys.argv[4].split('---') # Not case sensitive
-    wf_name = sys.argv[5]
-    wf_xml_args = json.loads(sys.argv[6])
-    
-    c = Client('https://' + pw_user_host, pw_api_key)
+def printd(*args):
+    print(datetime.now(), *args)
 
-    # Make sure we get to stopping the resources!
-    run_workflow = True
 
-    # Exit with error code:
-    exit_error = ''
-    
-    # Starting resources
-    my_clusters = c.get_resources()
-    resource_status = []
-    for rname in resource_names:
-        if not rname:
-            continue
-        
-        cluster = next(
-            (item for item in my_clusters if item["name"] == rname), None)
-        try:
-            #check if resource exists and is on
-            # find cluster_name in my_clusters
-            resource_status.append(c.start_resource(cluster['id']))
-        except Exception as e:
-            msg = 'ERROR: Unexpected error when starting resource ' + rname 
-            printd(msg)
-            traceback.print_exc()
-            run_workflow = False
-            exit_error += msg
-
-    # Running workflow
-    if run_workflow:
-        if 'not-found' in resource_status:
-            msg = 'ERROR: Some resources were not found'
-            printd(msg)
-            run_workflow = False
-            exit_error += '\n' + msg
-
-    if run_workflow:
-        try:
-            # Launching workflow
-            jid, djid = launch_workflow(wf_name, wf_xml_args, user, c)
-            # Waiting for workflow to complete
-            state = wait_workflow(djid, wf_name, c)
-            if state != 'ok':
-                msg = 'Workflow final state is ' + state
-                printd(msg)
-                exit_error += '\n' + msg
-        except Exception:
-            msg = 'Workflow launch failed unexpectedly'
-            printd(msg)
-            traceback.print_exc()
-            exit_error += '\n' + msg
+def start_resource(resource_name, c):
+    printd("Starting resource {}".format(resource_name))
+    # check if resource exists and is running already
+    resource = c.get_resource(resource_name)
+    if resource:
+        if resource["status"] == "off":
+            c.start_resource(resource_name)
+            printd("{} started".format(resource_name))
+            return "started"
+        else:
+            printd("{} already running".format(resource_name))
+            return "already-running"
     else:
-        msg = 'Aborting workflow launch'
-        printd(msg)
-        exit_error += '\n' + msg
-            
-
-    # Stoping resources
-    sleep(5)
-    for rname, rstatus in zip(resource_names, resource_status):
-        printd(rname, 'status', rstatus)
-        # Do not stop the pool if it was already started!
-        # FIXME: Even with this precaution a pool with ongoing work could be stopped
-        if rstatus == 'started':
-             stop_resource(rname, c)
+        printd("{} not found".format(resource_name))
+        return "not-found"
 
 
-    if exit_error:
-        raise(Exception(exit_error))
+def stop_resource(resource_name, c):
+    printd("Stopping resource {}".format(resource_name))
+    # check if resource exists and is stopped already
+    resource = c.get_resource(resource_name)
+    if resource:
+        if resource["status"] == "off":
+            printd("{} already stopped".format(resource_name))
+            return "already-stopped"
+        else:
+            c.stop_resource(resource_name)
+            printd("{} stopped".format(resource_name))
+            return "stopped"
+    else:
+        printd("{} not found".format(resource_name))
+        return "not-found"
+
+
+def launch_workflow(wf_name, wf_xml_args, user, c):
+    printd("Launching workflow {wf} in user {user}".format(wf=wf_name, user=user))
+    printd("XML ARGS: ", json.dumps(wf_xml_args, indent=4))
+    jid, djid = c.start_job(wf_name, wf_xml_args, user)
+    return jid, djid
+
+
+def wait_workflow(djid, wf_name, c):
+    printd("Waiting for workflow", wf_name)
+    while True:
+        try:
+            state = c.get_job_state(djid)
+        except:
+            state = "starting"
+
+        if state in ["ok", "deleted", "error"]:
+            return state
+
+        printd("Workflow", wf_name, "state:", state)
+        sleep(10)
+
+    printd(wf_name, "completed successfully")
