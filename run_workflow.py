@@ -28,14 +28,20 @@ if __name__ == "__main__":
     my_clusters = c.get_resources()
     resource_status = []
     for rname in resource_names:
-        if not rname:
-            continue
-
+        # check if resource exists and is on
+        # find rame in my_clusters
         cluster = next((item for item in my_clusters if item["name"] == rname), None)
+        if not cluster:
+            continue 
         try:
-            # check if resource exists and is on
-            # find cluster_name in my_clusters
-            resource_status.append(c.start_resource(cluster["id"]))
+            
+            # FIXME: consider case when cluster is already on
+            if cluster['status'] == 'off':
+                # if resource not on, start it
+                time.sleep(0.2)
+                resource_status.append(c.start_resource(cluster["id"]))
+            else: 
+                resource_status.append("started")
         except Exception as e:
             msg = "ERROR: Unexpected error when starting resource " + rname
             printd(msg)
