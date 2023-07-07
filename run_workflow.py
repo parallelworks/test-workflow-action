@@ -25,29 +25,48 @@ if __name__ == "__main__":
     exit_error = ""
 
     # Starting resources
-    my_clusters = c.get_resources()
     resource_status = []
     for rname in resource_names:
-        # check if resource exists and is on
-        # find rame in my_clusters
-        cluster = next((item for item in my_clusters if item["name"] == rname), None)
-        if not cluster:
-            continue 
+        if not rname:
+            continue
         try:
-            
-            # FIXME: consider case when cluster is already on
-            if cluster['status'] == 'off':
-                # if resource not on, start it
-                time.sleep(0.2)
-                resource_status.append(c.start_resource(cluster["id"]))
-            else: 
-                resource_status.append("started")
+            resource_status.append(start_resource(rname, c))
         except Exception as e:
             msg = "ERROR: Unexpected error when starting resource " + rname
             printd(msg)
             traceback.print_exc()
             run_workflow = False
             exit_error += msg
+
+    last_state = {}
+    started = []
+    cluster_hosts = []
+
+    printd("\nWaiting for", len(resource_names), "cluster(s) to start...")
+    while True:
+        current_state = c.get_resources()
+        for cluster in current_state:
+            if cluster["name"] in resource_names and cluster["status"] == "on":
+                if cluster["name"] not in started:
+                    state = cluster["state"]
+                    if cluster["name"] not in last_state:
+                        printd(cluster["name"], state)
+                        last_state[cluster["name"]] = state
+                    elif last_state[cluster["name"]] != state:
+                        print(cluster["name"], state)
+                        last_state[cluster["name"]] = state
+                    if "masterNode" in cluster["state"]:
+                        if cluster["state"]["masterNode"] != None:
+                            ip = cluster["state"]["masterNode"]
+                            entry = " ".join([cluster["name"], ip])
+                            print(entry)
+                            cluster_hosts.append(entry)
+                            started.append(cluster["name"])
+        if len(started) == len(resource_names):
+            print("\nStarted all clusters")
+            break
+
+        time.sleep(5)
 
     # Running workflow
     if run_workflow:
@@ -60,10 +79,10 @@ if __name__ == "__main__":
     if run_workflow:
         try:
             # Launching workflow
-            jid, djid = launch_workflow(wf_name, wf_xml_args, user, c)
+            response = launch_workflow(wf_name, wf_xml_args, user, c)
             # Waiting for workflow to complete
-            state = wait_workflow(djid, wf_name, c)
-            if state != "ok":
+            state = wait_workflow(wf_name, c)
+            if state != "completed":
                 msg = "Workflow final state is " + state
                 printd(msg)
                 exit_error += "\n" + msg
