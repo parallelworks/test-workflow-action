@@ -3,6 +3,7 @@ import sys, json
 from time import sleep
 from datetime import datetime
 import time
+import xml.etree.ElementTree as ET
 
 
 def printd(*args):
@@ -42,7 +43,7 @@ def stop_resource(resource_name, c):
             printd("{} already stopped".format(resource_name))
             return "already-stopped"
         else:
-            c.stop_resource(cluster['id'])
+            c.stop_resource(cluster["id"])
             printd("{} stopped".format(resource_name))
             return "stopped"
     else:
@@ -74,3 +75,19 @@ def wait_workflow(wf_name, c):
         sleep(10)
 
     printd(wf_name, "completed successfully")
+
+
+def get_cmd(wf_name, c):
+    url = c.api + "/v2/workflows/" + wf_name + "/xml?key=" + c.key
+    req = c.session.get(url)
+    req.raise_for_status()
+    data = req.text
+    root = ET.fromstring(data)
+    # root = tree.getroot()
+
+    # Find the 'command' element
+    cmd_elem = root.find("command")
+
+    # Extract the script from the 'command' element
+    cmd = cmd_elem.text.strip()
+    return cmd
