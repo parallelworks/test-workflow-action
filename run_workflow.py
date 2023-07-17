@@ -2,11 +2,28 @@ from client import Client
 import sys, json
 import traceback
 import time
+import xml.etree.ElementTree as ET
 
 # FIXME: Wont be able to stop the resource if it was just started!
 from time import sleep
 
 from client_functions import *
+
+
+def extract_script_from_xml(xml_file, inputs):
+    # Parse the XML file
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+
+    # Find the 'command' element
+    command_elem = root.find("command")
+
+    # Extract the script from the 'command' element
+    script = command_elem.text.strip()
+
+    inputs["startCmd"] = script
+    return inputs
+
 
 if __name__ == "__main__":
     pw_user_host = sys.argv[1]  # beluga.parallel.works
@@ -14,7 +31,10 @@ if __name__ == "__main__":
     user = sys.argv[3]  # echo ${PW_USER}
     resource_names = sys.argv[4].split("---")  # Not case sensitive
     wf_name = sys.argv[5]
-    wf_xml_args = json.loads(sys.argv[6])
+    inputs = json.loads(sys.argv[6])
+
+    # add startCmd to wf_xml_args
+    wf_xml_args = extract_script_from_xml("workflow.xml", inputs)
 
     c = Client("https://" + pw_user_host, pw_api_key)
 
