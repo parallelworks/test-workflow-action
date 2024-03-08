@@ -37,7 +37,7 @@ jobs:
     
     steps:
       - name: Run PW Workflow
-        uses: parallelworks/test-workflow-action@latest
+        uses: parallelworks/test-workflow-action@v7
         with:
           pw-user: ${{ inputs.pw-user }}
           workflow-name: ${{ inputs.workflow-name }}
