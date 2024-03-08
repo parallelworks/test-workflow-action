@@ -31,19 +31,15 @@ on:
 jobs:
   run-job:
     runs-on: ubuntu-latest
+    env:
+      PW_PLATFORM_HOST: ${{ inputs.pw-platform-host }}
+      PW_API_KEY: ${{ secrets[inputs.secret-with-key] }}
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@latest
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@latest
-
-      - name: Build Docker image
-        run: docker build -t run-pw-workflow .
-
       - name: Run PW Workflow
-        env:
-          PW_PLATFORM_HOST: ${{ inputs.pw-platform-host }}
-          PW_API_KEY: ${{ secrets[inputs.secret-with-key] }}
-
-        run: docker run run-pw-workflow ${{ inputs.pw-user }} ${{ inputs.workfow-name }} ${{ inputs.workflow-parameters }} ${{ inputs.resource-names }}
+        uses: parallelworks/test-workflow-action@latest
+        with:
+          pw-user: ${{ inputs.pw-user }}
+          workflow-name: ${{ inputs.workflow-name }}
+          workflow-parameters: ${{ inputs.workflow-parameters }}
+          resource-names: ${{ inputs.resource-names }}
