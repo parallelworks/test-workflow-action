@@ -24,6 +24,7 @@ c = Client(f'https://{PW_PLATFORM_HOST}', PW_API_KEY)
 
 
 if __name__ == "__main__":
+    printd('\n'.join(sys.argv))
     user = sys.argv[1]  # echo ${PW_USER}
     wf_name = sys.argv[2]
     wf_xml_args = json.loads(sys.argv[3])
