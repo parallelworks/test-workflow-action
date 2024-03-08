@@ -39,7 +39,7 @@ The action requires two environment variables:
 Additionally, the action accepts the following inputs:
 1. pw-user: The name of the PW user account to launch the job.
 2. workflow-name: The name of the workflow to run.
-3. workflow-parameters: A JSON-formatted string containing the inputs to the workflow. You can generate this string by filling in the input form of a given workflow, navigating to the JSON tab, and copying the inputs.
+3. workflow-parameters: A JSON-formatted string containing the inputs to the workflow. You can generate this string by filling in the input form of a given workflow, navigating to the JSON tab, and copying the inputs (see this [image](https://github.com/parallelworks/test-workflow-action/blob/main/json-input-form.png).
 4. resource-names: The names of the resources required to run the workflow. Use "---" to specify multiple resources, e.g., r1---r2. The format for each resource is `<user_name>/<resource_name>`. If no user_name is provided, the user's name is used by default. This input is optional. When not provided, the resources are obtained from the computeResource parameter types in the workflow-parameters.
 
 A sample workflow utilizing this action is provided [here](https://github.com/parallelworks/test-workflow-action/blob/main/.github/workflows/run_job.yml).
