@@ -6,50 +6,57 @@ import time
 import xml.etree.ElementTree as ET
 
 
+class ResourceNotFoundError(Exception):
+    pass
+
 def printd(*args):
     print(datetime.now(), *args)
 
-
-def start_resource(resource_name, c):
-    printd("Starting resource {}".format(resource_name))
-    my_clusters = c.get_resources()
-    # check if resource exists and is running already
-    cluster = next(
-        (item for item in my_clusters if item["name"] == resource_name), None
-    )
-    if cluster:
-        if cluster["status"] == "off":
-            time.sleep(0.2)
-            c.start_resource(cluster["id"])
-            printd("{} started".format(resource_name))
-            return "started"
-        else:
-            printd("{} already running".format(resource_name))
-            return "already-running"
+def get_resource_id_from_resource_name(rname, user, c):
+    resources = c.get_resources()
+    if '/' in rname:
+        rnamespace = rname.split('/')[0]
+        rname = rname.split('/')[1]
     else:
-        printd("{} not found".format(resource_name))
-        return "not-found"
+        rnamespace = user
+
+    for r in resources:
+        if r['name'] == rname and r['namespace'] == rnamespace:
+            return r['id']
+        
+    raise ResourceNotFoundError(f"No resource found with name '{rname}' and namespace '{rnamespace}'.")
+
+def get_resource_from_resource_id(rid, c):
+    resources = c.get_resources()
+
+    for r in resources:
+        if r['id'] == rid:
+            return r
+        
+    raise ResourceNotFoundError(f"No resource found with id '{rid}'.")
 
 
-def stop_resource(resource_name, c):
-    printd("Stopping resource {}".format(resource_name))
-    my_clusters = c.get_resources()
-    # check if resource exists and is stopped already
-    cluster = next(
-        (item for item in my_clusters if item["name"] == resource_name), None
-    )
-    if cluster:
-        if cluster["status"] == "off":
-            printd("{} already stopped".format(resource_name))
-            return "already-stopped"
-        else:
-            c.stop_resource(cluster["id"])
-            printd("{} stopped".format(resource_name))
-            return "stopped"
+def start_resource(resource, c):
+    printd("Starting resource {}".format(resource['id']))
+
+    if resource["status"] == "off":
+        time.sleep(0.2)
+        c.start_resource(resource["id"])
+        printd("Resource {}/{} with id {} started".format(resource['namespace'], resource['name'], resource['id']))
+        return "started"
     else:
-        printd("{} not found".format(resource_name))
-        return "not-found"
+        printd("Resource {}/{} with id {} is already started".format(resource['namespace'], resource['name'], resource['id']))
+        return "already-running"
 
+
+def stop_resource(resource, c):
+    printd("Stopping resource {}".format(resource['id']))
+    c.stop_resource(resource['id'])
+    printd("Resource {}/{} with ID {} stopped".format(
+        resource['namespace'], 
+        resource['name'], 
+        resource['id'])
+    )
 
 def launch_workflow(wf_name, wf_xml_args, user, c):
     printd("Launching workflow {wf} in user {user}".format(wf=wf_name, user=user))
@@ -69,25 +76,29 @@ def wait_workflow(wf_name, c):
             state = "starting"
 
         if state in ["completed", "deleted", "error"]:
+            printd(wf_name, "completed successfully")
             return state
 
         printd("Workflow", wf_name, "state:", state)
         sleep(10)
 
-    printd(wf_name, "completed successfully")
 
+def wait_for_resources(c, resource_ids):
+    job_resources_started_prev = []
+    while True:
+        updated_resources = c.get_resources()
+        job_resources = [ r for r in updated_resources if r['id'] in resource_ids ]
+        job_resources_running = [ r for r in job_resources if r['status'] == 'on' ]
+        job_resources_started = [ r for r in job_resources_running if 'masterNode' in r['state'] ] 
+        job_resources_started = [ r for r in job_resources_started if r['state']['masterNode'] != None ] 
 
-def get_cmd(wf_name, c):
-    url = c.api + "/v2/workflows/" + wf_name + "/xml?key=" + c.key
-    req = c.session.get(url)
-    req.raise_for_status()
-    data = req.text
-    root = ET.fromstring(data)
-    # root = tree.getroot()
+        for r in job_resources_started:
+            if r not in job_resources_started_prev:
+                printd('Resource {} is ready'.format(r['name']))
+                job_resources_started_prev.append(r)
 
-    # Find the 'command' element
-    cmd_elem = root.find("command")
+        if len(job_resources_started) == len(resource_ids):
+            printd("Started all clusters")
+            return
 
-    # Extract the script from the 'command' element
-    cmd = cmd_elem.text.strip()
-    return cmd
+        time.sleep(5)
