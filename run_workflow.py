@@ -30,7 +30,7 @@ if __name__ == "__main__":
     wf_xml_args = json.loads(sys.argv[3])
     resource_ids = None
     if len(sys.argv) == 5:
-        if sys.argv[5]:
+        if sys.argv[4]:
             resource_names = sys.argv[4].split("---")  # Not case sensitive
             resource_ids = [get_resource_id_from_resource_name(rname, user, c) for rname in resource_names]
     
