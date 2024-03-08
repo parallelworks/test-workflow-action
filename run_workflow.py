@@ -28,11 +28,13 @@ if __name__ == "__main__":
     user = sys.argv[1]  # echo ${PW_USER}
     wf_name = sys.argv[2]
     wf_xml_args = json.loads(sys.argv[3])
-    print(len(sys.argv))
+    resource_ids = None
     if len(sys.argv) == 5:
-        resource_names = sys.argv[4].split("---")  # Not case sensitive
-        resource_ids = [get_resource_id_from_resource_name(rname, user, c) for rname in resource_names]
-    else:
+        if sys.argv[5]:
+            resource_names = sys.argv[4].split("---")  # Not case sensitive
+            resource_ids = [get_resource_id_from_resource_name(rname, user, c) for rname in resource_names]
+    
+    if not resource_ids:
         resource_ids = get_resource_ids_from_workflow_inputs(wf_xml_args, [])
 
     resources = [ get_resource_from_resource_id(resource_id, c) for resource_id in resource_ids ]
