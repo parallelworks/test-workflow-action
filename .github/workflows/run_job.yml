@@ -9,7 +9,7 @@ on:
         required: true
         default: cloud.parallel.works
       secret-with-key:
-        description: 'Name of the secret holding the PW_API_KEY'
+        description: 'Name of the secret holding the PW_API_KEY'. DO NOT PASTE THE KEY!
         type: string
         required: true
       pw-user:
